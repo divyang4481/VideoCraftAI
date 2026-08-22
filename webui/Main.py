@@ -1465,11 +1465,15 @@ def _render_top_bar():
 
 
 support_locales = [
-    "zh-CN",
-    "zh-HK",
-    "zh-TW",
-    "de-DE",
     "en-US",
+    "en-IN",
+    "hi-IN",
+    "gu-IN",
+    "kn-IN",
+    "te-IN",
+    "ta-IN",
+    "ml-IN",
+    "de-DE",
     "es-ES",
     "fr-FR",
     "it-IT",
@@ -1478,6 +1482,26 @@ support_locales = [
     "th-TH",
     "tr-TR",
 ]
+
+LANGUAGE_DISPLAY_NAMES = {
+    "": "Auto Detect",
+    "en-US": "English (US)",
+    "en-IN": "English (India)",
+    "hi-IN": "Hindi (हिन्दी)",
+    "gu-IN": "Gujarati (ગુજરાતી)",
+    "kn-IN": "Kannada (ಕನ್ನಡ)",
+    "te-IN": "Telugu (తెలుగు)",
+    "ta-IN": "Tamil (தமிழ்)",
+    "ml-IN": "Malayalam (മലയാളം)",
+    "de-DE": "German (Deutsch)",
+    "es-ES": "Spanish (Español)",
+    "fr-FR": "French (Français)",
+    "it-IT": "Italian (Italiano)",
+    "ru-RU": "Russian (Русский)",
+    "vi-VN": "Vietnamese (Tiếng Việt)",
+    "th-TH": "Thai (ไทย)",
+    "tr-TR": "Turkish (Türkçe)",
+}
 
 
 # -----------------------------------------------------------------------------
@@ -3463,7 +3487,8 @@ def _render_script_settings(panel, params):
                 (tr("Auto Detect"), ""),
             ]
             for code in support_locales:
-                video_languages.append((code, code))
+                label = LANGUAGE_DISPLAY_NAMES.get(code, code)
+                video_languages.append((label, code))
 
             selected_language_code = stable_selectbox(
                 tr("Script Language"),
@@ -3476,7 +3501,7 @@ def _render_script_settings(panel, params):
                 key="script_language_select",
                 format_func=lambda value: dict(
                     (v, label) for label, v in video_languages
-                )[value],
+                ).get(value, value or tr("Auto Detect")),
             )
             params.video_language = selected_language_code
             _set_runtime_config("ui", "video_language", params.video_language)
@@ -4901,11 +4926,20 @@ def _render_audio_settings(panel, params):
                     saved_voice_name
                 )
             else:
-                # If not, selects a default voice based on the current UI language
+                # If not, selects a default voice based on script language or UI language
+                pref_lang = getattr(params, "video_language", "") or st.session_state.get("ui_language", "")
+                pref_prefix = pref_lang.lower().split("-")[0] if pref_lang else ""
+                
                 for i, v in enumerate(filtered_voices):
-                    if v.lower().startswith(st.session_state["ui_language"].lower()):
+                    if pref_lang and v.lower().startswith(pref_lang.lower()):
                         saved_voice_name_index = i
                         break
+                else:
+                    if pref_prefix:
+                        for i, v in enumerate(filtered_voices):
+                            if v.lower().startswith(pref_prefix):
+                                saved_voice_name_index = i
+                                break
 
             # If no matching sound is found, the first sound is used
             if saved_voice_name_index >= len(friendly_names) and friendly_names:

@@ -268,7 +268,7 @@
     "gender": "Female"
   },
   {
-    "name": "en-AU-WilliamNeural",
+    "name": "en-AU-WilliamMultilingualNeural",
     "gender": "Male"
   },
   {
@@ -1286,41 +1286,5 @@
   {
     "name": "zu-ZA-ThembaNeural",
     "gender": "Male"
-  },
-  {
-    "name": "en-US-AvaMultilingualNeural-V2",
-    "gender": "Female"
-  },
-  {
-    "name": "en-US-AndrewMultilingualNeural-V2",
-    "gender": "Male"
-  },
-  {
-    "name": "en-US-EmmaMultilingualNeural-V2",
-    "gender": "Female"
-  },
-  {
-    "name": "en-US-BrianMultilingualNeural-V2",
-    "gender": "Male"
-  },
-  {
-    "name": "de-DE-FlorianMultilingualNeural-V2",
-    "gender": "Male"
-  },
-  {
-    "name": "de-DE-SeraphinaMultilingualNeural-V2",
-    "gender": "Female"
-  },
-  {
-    "name": "fr-FR-RemyMultilingualNeural-V2",
-    "gender": "Male"
-  },
-  {
-    "name": "fr-FR-VivienneMultilingualNeural-V2",
-    "gender": "Female"
-  },
-  {
-    "name": "zh-CN-XiaoxiaoMultilingualNeural-V2",
-    "gender": "Female"
   }
 ]

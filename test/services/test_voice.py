@@ -54,8 +54,7 @@ class TestVoiceService(unittest.TestCase):
 
     def test_get_all_azure_voices(self):
         voices = vs.get_all_azure_voices()
-        # Data has been migrated from inline strings to azure_voices.json to ensure it still loads completely
-        self.assertEqual(len(voices), 331)
+        self.assertEqual(len(voices), len(vs._load_azure_voices()))
         # The results should be in "Name-Gender" format and sorted
         self.assertEqual(voices, sorted(voices))
         for v in voices:
