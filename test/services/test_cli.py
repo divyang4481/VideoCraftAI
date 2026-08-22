@@ -16,17 +16,17 @@ import cli
 
 class TestCli(unittest.TestCase):
     def test_default_voice_is_valid_edge_tts_voice(self):
-        args = cli.parse_args(["--video-subject", "测试主题"])
+        args = cli.parse_args(["--video-subject", "test topic"])
         params = cli.build_video_params(args)
 
         self.assertEqual(params.voice_name, "zh-CN-XiaoxiaoNeural-Female")
 
     def test_complete_script_can_replace_video_subject(self):
-        args = cli.parse_args(["--video-script", "完整的视频文案"])
+        args = cli.parse_args(["--video-script", "Complete video copy"])
         params = cli.build_video_params(args)
 
         self.assertEqual(params.video_subject, "")
-        self.assertEqual(params.video_script, "完整的视频文案")
+        self.assertEqual(params.video_script, "Complete video copy")
 
     def test_subject_or_script_is_required(self):
         with self.assertRaises(SystemExit) as cm:
@@ -38,7 +38,7 @@ class TestCli(unittest.TestCase):
         args = cli.parse_args(
             [
                 "--video-subject",
-                "测试主题",
+                "test topic",
                 "--video-source",
                 "local",
                 "--video-materials",
@@ -51,7 +51,7 @@ class TestCli(unittest.TestCase):
         params = cli.build_video_params(args)
         materials = params.video_materials
 
-        self.assertEqual(params.video_subject, "测试主题")
+        self.assertEqual(params.video_subject, "test topic")
         self.assertEqual(params.video_source, "local")
         self.assertEqual([m.url for m in materials], ["a.mp4", "b.jpg"])
         self.assertTrue(all(m.provider == "local" for m in materials))
@@ -61,14 +61,14 @@ class TestCli(unittest.TestCase):
         with patch("app.services.task.start", return_value={"script": "ok"}) as start, patch(
             "app.utils.utils.get_uuid", return_value="task-123"
         ), patch("builtins.print") as print_mock:
-            code = cli.run_cli(["--video-subject", "命令行测试", "--stop-at", "script"])
+            code = cli.run_cli(["--video-subject", "Command line testing", "--stop-at", "script"])
 
         self.assertEqual(code, 0)
         self.assertTrue(start.called)
         kwargs = start.call_args.kwargs
         self.assertEqual(kwargs["task_id"], "task-123")
         self.assertEqual(kwargs["stop_at"], "script")
-        self.assertEqual(kwargs["params"].video_subject, "命令行测试")
+        self.assertEqual(kwargs["params"].video_subject, "Command line testing")
         self.assertIs(kwargs["allow_server_file_input"], True)
         print_mock.assert_called_once()
 
@@ -76,13 +76,13 @@ class TestCli(unittest.TestCase):
         with patch("app.services.task.start", return_value=None), patch(
             "app.utils.utils.get_uuid", return_value="task-456"
         ), patch.object(cli.logger, "error") as log_error:
-            code = cli.run_cli(["--video-subject", "失败场景"])
+            code = cli.run_cli(["--video-subject", "failure scenario"])
 
         self.assertEqual(code, 1)
         log_error.assert_called_once()
 
     def test_run_cli_returns_error_for_structured_task_failure(self):
-        """任务服务返回结构化失败信息时，CLI 仍必须以非零状态退出。"""
+        """When the task service returns structured failure information,CLI Must still exit with non-zero status."""
         failure = {
             "task_id": "task-structured-failure",
             "state": -1,
@@ -96,7 +96,7 @@ class TestCli(unittest.TestCase):
         ), patch.object(cli.logger, "error") as log_error, patch(
             "builtins.print"
         ) as print_mock:
-            code = cli.run_cli(["--video-subject", "失败场景"])
+            code = cli.run_cli(["--video-subject", "failure scenario"])
 
         self.assertEqual(code, 1)
         print_mock.assert_not_called()
@@ -331,7 +331,7 @@ class TestCli(unittest.TestCase):
         self.assertEqual(cm.exception.code, 2)
 
     def test_positive_volume_custom_bgm_requires_file_before_task_start(self):
-        """启用自定义 BGM 时仍必须在任务启动前报告缺少文件。"""
+        """Enable customization BGM Missing files must still be reported before the task is started."""
         with (
             patch("app.services.task.start") as start,
             patch.object(cli.logger, "error") as log_error,
@@ -361,7 +361,7 @@ class TestCli(unittest.TestCase):
         self.assertEqual(args.bgm_type, "custom")
 
     def test_zero_volume_custom_bgm_skips_file_requirement_and_resolution(self):
-        """0 音量应忽略缺失或无效文件，与 WebUI 和视频服务保持一致。"""
+        """0 Volume should ignore missing or invalid files, with WebUI Be consistent with video services."""
         file_arguments = [[], ["--bgm-file", "missing-background.mp3"]]
         for extra_arguments in file_arguments:
             with self.subTest(extra_arguments=extra_arguments):
@@ -389,7 +389,7 @@ class TestCli(unittest.TestCase):
                 self.assertEqual(params.bgm_file, "")
 
     def test_custom_bgm_reuses_service_formats_and_managed_path_resolution(self):
-        """CLI 必须跟随 BGM 服务的格式白名单，不能继续单独限制为 MP3。"""
+        """CLI must follow BGM The service's format whitelist cannot continue to be individually restricted to MP3. """
         from app.services import bgm as bgm_service
 
         for extension in bgm_service.SUPPORTED_BGM_EXTENSIONS:
@@ -418,7 +418,7 @@ class TestCli(unittest.TestCase):
                 self.assertEqual(params.bgm_file, resolved_path)
 
     def test_custom_bgm_reports_service_resolution_failure_before_task_start(self):
-        """非法格式或越界路径应转换为包含统一格式范围的 CLI 错误。"""
+        """Illegal formats or out-of-bounds paths should be converted to include the unified format range. CLI mistake."""
         from app.services import bgm as bgm_service
 
         args = cli.parse_args(
@@ -581,7 +581,7 @@ class TestCli(unittest.TestCase):
         self.assertIn("exit with 2", help_text)
 
     def test_help_does_not_initialize_application_or_write_logs(self):
-        """帮助命令应独立于业务配置加载，便于用户查看和脚本采集。"""
+        """The help command should be loaded independently of the business configuration to facilitate user viewing and script collection."""
         project_root = Path(__file__).parent.parent.parent
         result = subprocess.run(
             [sys.executable, str(project_root / "cli.py"), "--help"],

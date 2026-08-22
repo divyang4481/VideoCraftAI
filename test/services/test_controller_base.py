@@ -30,7 +30,7 @@ class TestControllerAuthentication(unittest.TestCase):
         task_ids = (
             "request-123",
             "trace/01HZX_abc.def:456",
-            "请求-123",
+            "ask-123",
             "x" * base.MAX_TASK_ID_LENGTH,
         )
 
@@ -62,8 +62,8 @@ class TestControllerAuthentication(unittest.TestCase):
 
     def test_get_task_id_reuses_safe_header_or_generates_uuid(self):
         """
-        客户端提供 request ID 时需要原样保留，缺失时则生成可记录到日志和
-        错误响应中的 UUID，保证两种入口都有可追踪标识。
+        Client provided request ID needs to be retained as it is, and when missing, it will be generated that can be recorded in the log and
+        in error response UUID, ensure that both entrances have traceable identification.
         """
         self.assertEqual(
             base.get_task_id(self._request({"x-task-id": "request-123"})),
@@ -99,7 +99,7 @@ class TestControllerAuthentication(unittest.TestCase):
         self.assertNotIn("forged-log-entry", logged_error)
 
     def test_verify_token_accepts_matching_key(self):
-        """配置了 API Key 时，相同请求头必须正常通过鉴权。"""
+        """Configured API Key , the same request header must pass the authentication normally."""
         config.app["api_key"] = "secret"
 
         result = base.verify_token(self._request({"x-api-key": "secret"}))
@@ -108,8 +108,8 @@ class TestControllerAuthentication(unittest.TestCase):
 
     def test_verify_token_rejects_missing_or_wrong_key(self):
         """
-        缺失和错误的 API Key 都必须返回 401，并保留客户端 request ID，
-        避免鉴权失败在日志中无法与调用方请求对应。
+        missing and wrong API Key must return 401, and keep the client request ID, 
+        This prevents authentication failures from not corresponding to the caller's request in the log.
         """
         config.app["api_key"] = "secret"
 
@@ -126,7 +126,7 @@ class TestControllerAuthentication(unittest.TestCase):
                 self.assertIn("invalid token", raised.exception.message)
 
     def test_new_router_preserves_common_prefix_and_dependencies(self):
-        """所有 V1 路由都应复用统一前缀，并仅在传入时设置鉴权依赖。"""
+        """all V1 Routes should all reuse a unified prefix and set authentication dependencies only when incoming."""
         dependency = object()
 
         plain_router = new_router()

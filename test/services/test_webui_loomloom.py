@@ -83,35 +83,35 @@ def test_loomloom_quote_signature_changes_with_billable_inputs():
     signature = namespace["_loomloom_script_signature"]
 
     original = signature(
-        subject="主题",
+        subject="",
         language="zh-CN",
         candidate_count=3,
         duration_seconds=60,
-        style="轻松",
+        style="",
         credential_fingerprint="account-a",
     )
     repeated = signature(
-        subject="主题",
+        subject="",
         language="zh-CN",
         candidate_count=3,
         duration_seconds=60,
-        style="轻松",
+        style="",
         credential_fingerprint="account-a",
     )
     changed = signature(
-        subject="主题",
+        subject="",
         language="zh-CN",
         candidate_count=4,
         duration_seconds=60,
-        style="轻松",
+        style="",
         credential_fingerprint="account-a",
     )
     changed_credential = signature(
-        subject="主题",
+        subject="",
         language="zh-CN",
         candidate_count=3,
         duration_seconds=60,
-        style="轻松",
+        style="",
         credential_fingerprint="account-b",
     )
 

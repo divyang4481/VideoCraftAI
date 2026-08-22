@@ -13,39 +13,39 @@ LOG_RECORD_FORMAT = (
     '"{file.path}:{line}":<blue> {function}</> '
     "- <level>{message}</>\n"
 )
-# Loguru 启动时默认终端 handler 的 ID 为 0。WebUI 重新加载时只能替换这个
-# 基础终端输出，不能调用 logger.remove() 清空全部 handler，否则正在运行任务
-# 用于收集 WebUI 日志的临时 sink 也会被删除。
+# When Loguru starts, the default terminal handler ID is 0. This can only be replaced when WebUI reloads
+# Basic terminal output, logger.remove() cannot be called to clear all handlers, otherwise the task is running
+# The temporary sink used to collect WebUI logs will also be deleted.
 _terminal_handler_id: int | None = 0
 _terminal_handler_lock = threading.RLock()
 
 
 def format_log_record(record):
     """
-    统一格式化终端与 WebUI 日志。
+    Unified format terminal and WebUI log.
 
-    Loguru 会把同一条记录交给多个 sink。第一个 sink 可能已经将绝对路径转换
-    为项目相对路径，因此这里同时兼容绝对路径和 ``./`` 开头的已格式化路径。
-    WebUI sink 会关闭颜色，但时间、级别、调用位置和消息内容与终端保持一致。
+    Loguru The same record will be handed over to multiple sink. first one sink The absolute path may have been converted
+    is a relative path to the project, so it is compatible with both absolute paths and ``./`` The formatted path that begins with .
+    WebUI sink Colors are turned off, but the time, level, call location, and message content remain consistent with the terminal.
     """
     file_path = record["file"].path
     if os.path.isabs(file_path):
         relative_path = os.path.relpath(file_path, PROJECT_ROOT)
         record["file"].path = f"./{relative_path}"
 
-    # 日志消息有时会包含任务文件的绝对路径。统一缩短为项目相对路径，可以
-    # 避免 WebUI 和终端因初始化入口不同而展示两套内容。
+    # Log messages sometimes contain the absolute path to the task file. Uniformly shorten to project relative path, you can
+    # Prevent the WebUI and the terminal from displaying two sets of content due to different initialization entrances.
     record["message"] = record["message"].replace(PROJECT_ROOT, ".")
     return LOG_RECORD_FORMAT
 
 
 def configure_terminal_logger(sink, level: str, colorize: bool = True) -> int:
     """
-    安全替换进程级终端日志 handler，并保留任务专用 handler。
+    Safely replace process-level terminal logs handler, and keep the task-specific handler. 
 
-    Streamlit 在代码热重载或缓存失效时可能重新执行日志初始化。这里只按已记录
-    的 handler ID 精确移除旧终端输出，因此不会中断后台任务正在写入的 WebUI
-    日志。锁用于保护多个浏览器会话同时初始化时的 ID 更新。
+    Streamlit Log initialization may be re-executed during code hot reload or cache invalidation. Just click on Recorded here
+    of handler ID Precisely removes old terminal output, so it doesn't interrupt what the background task is writing WebUI
+    log. The lock is used to protect multiple browser sessions when they are initialized simultaneously. ID renew.
     """
     global _terminal_handler_id
 
@@ -54,8 +54,8 @@ def configure_terminal_logger(sink, level: str, colorize: bool = True) -> int:
             try:
                 logger.remove(_terminal_handler_id)
             except ValueError:
-                # 测试或外部入口可能已经移除该 handler。继续创建新的终端输出，
-                # 不需要影响其它仍有效的日志 sink。
+                # A test or external portal may have removed the handler. Go ahead and create a new terminal output,
+                # There is no need to affect other log sinks that are still valid.
                 pass
 
         _terminal_handler_id = logger.add(

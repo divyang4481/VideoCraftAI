@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app.config import config
 
-# 忽略 Pydantic 的特定警告
+# Ignore Pydantic-specific warnings
 warnings.filterwarnings(
     "ignore",
     category=UserWarning,
@@ -57,9 +57,9 @@ class MaterialInfo:
     provider: str = "pexels"
     url: str = ""
     duration: int = 0
-    # 在线素材搜索会附带经过筛选的公开来源信息，供搜索缓存和任务记录复用。
-    # 本地上传素材不需要填写；写入任务文件前仍会按字段白名单重新构造，
-    # 避免外部请求传入的签名 URL、凭据或无关字段进入持久化数据。
+    # Online material searches are accompanied by filtered public source information for reuse in search caches and task records.
+    # There is no need to fill in the materials for local upload; it will still be restructured according to the field whitelist before writing to the task file.
+    # Prevent signed URLs, credentials, or irrelevant fields passed in from external requests from entering persistent data.
     source_info: Optional[dict[str, Any]] = None
 
 
@@ -67,10 +67,10 @@ class VideoParams(BaseModel):
     """
     {
       "video_subject": "",
-      "video_aspect": "横屏 16:9（西瓜视频）",
-      "voice_name": "女生-晓晓",
+      "video_aspect": "Horizontal screen 16:9(Watermelon Video)",
+      "voice_name": "girl-Xiaoxiao",
       "bgm_name": "random",
-      "font_name": "STHeitiMedium 黑体-中",
+      "font_name": "STHeitiMedium black body-middle",
       "text_color": "#FFFFFF",
       "font_size": 60,
       "stroke_color": "#000000",
@@ -105,8 +105,8 @@ class VideoParams(BaseModel):
     bgm_type: Optional[str] = "random"
     bgm_file: Optional[str] = ""
     bgm_volume: Optional[float] = 0.2
-    # 视频配乐供应商共用提示词，WebUI 新任务统一写入该字段。保留下面的
-    # Sonilo 专用字段以兼容旧任务记录和现有 CLI 参数。
+    # Prompt words are shared by video soundtrack suppliers, and new WebUI tasks are uniformly written into this field. Keep the following
+    # Sonilo-specific fields for compatibility with old task records and existing CLI parameters.
     video_music_prompt: str = Field(default="", max_length=2000)
     sonilo_bgm_prompt: str = Field(default="", max_length=2000)
 
@@ -165,7 +165,7 @@ class AudioRequest(BaseModel):
 class VideoScriptParams:
     """
     {
-      "video_subject": "春天的花海",
+      "video_subject": "Spring flowers",
       "video_language": "",
       "paragraph_number": 1,
       "video_script_prompt": "",
@@ -173,7 +173,7 @@ class VideoScriptParams:
     }
     """
 
-    video_subject: Optional[str] = "春天的花海"
+    video_subject: Optional[str] = "Spring flowers"
     video_language: Optional[str] = ""
     paragraph_number: int = Field(default=1, ge=1, le=10)
     video_script_prompt: str = Field(default="", max_length=2000)
@@ -190,9 +190,9 @@ class VideoTermsParams:
     }
     """
 
-    video_subject: Optional[str] = "春天的花海"
+    video_subject: Optional[str] = "Spring flowers"
     video_script: Optional[str] = (
-        "春天的花海，如诗如画般展现在眼前。万物复苏的季节里，大地披上了一袭绚丽多彩的盛装。金黄的迎春、粉嫩的樱花、洁白的梨花、艳丽的郁金香……"
+        "The sea of ​​flowers in spring unfolds before our eyes like a poem and a picturesque scene. In the season of revival of all things, the earth is dressed in colorful costumes. Golden spring greetings, pink cherry blossoms, white pear blossoms, and gorgeous tulips......"
     )
     amount: Optional[int] = 5
     match_materials_to_script: bool = False
@@ -249,7 +249,7 @@ class TaskResponseData(BaseModel):
 
 
 class TaskStatusData(BaseModel):
-    """任务查询对外保证的稳定字段；历史和扩展字段继续原样透传。"""
+    """Task queries externally guaranteed stable fields; history and extended fields continue to be transparently transmitted as they are."""
 
     model_config = ConfigDict(extra="allow")
 
@@ -268,7 +268,7 @@ class TaskStatusData(BaseModel):
 
 
 class TaskListData(BaseModel):
-    """分页任务列表结构。"""
+    """Paginated task list structure."""
 
     tasks: List[TaskStatusData]
     total: int
@@ -331,10 +331,10 @@ class TaskResponse(BaseResponse):
 
 class TaskQueryResponse(BaseResponse):
     """
-    任务查询会返回生成状态和可选的跨平台发布状态。
+    Task queries return build status and optional cross-platform release status.
 
-    生成失败时包含 `failed_stage` 和 `error`；生成完成后如果启用了自动发布，
-    `cross_post_state` 会依次进入 pending、processing、complete 或 failed。
+    Contains when build fails `failed_stage` and `error`;If automatic publishing is enabled after the generation is completed,
+    `cross_post_state` will enter in sequence pending, processing, complete or failed. 
     """
 
     data: TaskStatusData
@@ -371,7 +371,7 @@ class TaskQueryResponse(BaseResponse):
 
 
 class TaskListResponse(BaseResponse):
-    """任务列表使用独立响应模型，避免与单任务查询混用文档结构。"""
+    """Task lists use an independent response model to avoid mixing document structures with single-task queries."""
 
     data: TaskListData
 
@@ -420,7 +420,7 @@ class VideoScriptResponse(BaseResponse):
                 "status": 200,
                 "message": "success",
                 "data": {
-                    "video_script": "春天的花海，是大自然的一幅美丽画卷。在这个季节里，大地复苏，万物生长，花朵争相绽放，形成了一片五彩斑斓的花海..."
+                    "video_script": "The sea of ​​flowers in spring is a beautiful picture of nature. In this season, the earth revives, all things grow, and flowers bloom, forming a colorful sea of ​​flowers...."
                 },
             },
         }

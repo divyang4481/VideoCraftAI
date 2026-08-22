@@ -8,7 +8,7 @@ from app.services import elevenlabs_music
 
 
 class _StreamingResponse:
-    """提供 ElevenLabs 配乐服务实际使用的最小 Response 接口。"""
+    """supply ElevenLabs The soundtrack service actually uses the minimum Response interface."""
 
     def __init__(
         self,
@@ -94,7 +94,7 @@ class TestElevenLabsMusicService(unittest.TestCase):
             self.assertEqual(elevenlabs_music.get_api_key(), "env-key")
 
     def test_model_and_timeout_reject_invalid_configuration(self):
-        """第三方请求配置异常时必须回退安全默认值，不能让任务直接崩溃。"""
+        """When a third-party request configuration exception occurs, the safe default value must be rolled back and the task cannot crash directly."""
         test_cases = [
             ({"music_model_id": "music_v1"}, "music_v1", (15, 600)),
             (
@@ -235,8 +235,8 @@ class TestElevenLabsMusicService(unittest.TestCase):
 
     def test_generation_access_only_blocks_deterministic_account_errors(self):
         """
-        免费套餐和无效 Key 必须阻止昂贵任务；订阅接口范围或网络问题无法证明
-        Music API 不可用，只能记录警告并交给实际生成请求确认。
+        Free tier and invalid Key Expensive tasks must be blocked; subscription interface range or network issues cannot prove
+        Music API Not available, only warnings can be logged and submitted to the actual build request for confirmation.
         """
         deterministic_errors = [
             elevenlabs_music.ElevenLabsPaidPlanRequiredError("paid plan"),
@@ -269,7 +269,7 @@ class TestElevenLabsMusicService(unittest.TestCase):
         self.assertIn("inconclusive", str(warning.call_args))
 
     def test_connection_rejects_free_plan_before_music_generation(self):
-        """免费套餐不支持 Music API，应在上传视频前给出明确错误。"""
+        """Not supported in free plan Music API, a clear error should be given before uploading the video."""
         response = _StreamingResponse(payload={"tier": "free"})
         with (
             patch.object(
@@ -443,8 +443,8 @@ class TestElevenLabsMusicService(unittest.TestCase):
                 post.call_args.kwargs["params"]["output_format"],
                 "mp3_44100_128",
             )
-            # 生产接口实际接收 ``videos``；使用文档示例中的 ``videos[]`` 会
-            # 返回 422 Field required，因此测试固定真实可用的协议字段。
+            # The production interface actually receives ``videos``; using ``videos[]`` in the documentation example will
+            # Returns 422 Field required, so the test fixes the actual available protocol fields.
             self.assertEqual(post.call_args.kwargs["files"][0][0], "videos")
             self.assertEqual(post.call_args.kwargs["stream"], True)
             self.assertEqual(

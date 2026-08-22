@@ -2,17 +2,17 @@
 
 # If you could not download the model from the official site, you can use the mirror site.
 # Just remove the comment of the following line .
-# 如果你无法从官方网站下载模型，你可以使用镜像网站。
-# 只需要移除下面一行的注释即可。
+# If you cannot download the model from the official website, you can use a mirror website.
+# Just remove the comment on the line below.
 
 # export HF_ENDPOINT=https://hf-mirror.com
 
 CURRENT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 export PYTHONPATH="$CURRENT_DIR${PYTHONPATH:+:$PYTHONPATH}"
 
-# 0.0.0.0 只能表示“监听所有网卡”，不适合作为浏览器访问地址。
-# macOS/Linux 下浏览器打开 http://0.0.0.0:8501 可能会经过代理或网关，
-# 最终出现 502。默认绑定并打开 127.0.0.1，与 Windows 启动脚本保持一致。
+# 0.0.0.0 can only mean "listen on all network cards" and is not suitable as a browser access address.
+# When opening http://0.0.0.0:8501 in a browser under macOS/Linux, it may go through a proxy or gateway.
+# Eventually 502 appears. Binds and opens 127.0.0.1 by default, consistent with Windows startup scripts.
 MPT_WEBUI_HOST="${MPT_WEBUI_HOST:-127.0.0.1}"
 MPT_WEBUI_PORT="${MPT_WEBUI_PORT:-8501}"
 
@@ -54,7 +54,7 @@ sys.exit(1)
 PY
 }
 
-# 用 Python 做端口探测，避免依赖 lsof/nc 在不同 macOS/Linux 发行版上的差异。
+# Use Python for port detection to avoid relying on differences in lsof/nc on different macOS/Linux distributions.
 # shellcheck disable=SC2086
 SELECTED_WEBUI_PORT=$(find_available_port $PORT_CHECK_CMD)
 

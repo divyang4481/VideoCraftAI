@@ -23,7 +23,7 @@ WEBUI_MAIN = ROOT_DIR / "webui" / "Main.py"
 
 
 def _attribute_name(node):
-    """把 ``module.function`` 形式的 AST 调用还原为稳定字符串。"""
+    """ ``module.function``  AST . """
     names = []
     while isinstance(node, ast.Attribute):
         names.append(node.attr)
@@ -35,10 +35,10 @@ def _attribute_name(node):
 
 def test_generation_controls_submit_background_task_instead_of_blocking_page():
     """
-    WebUI 生成按钮不能重新直接调用同步流水线。
+    WebUI . 
 
-    这是 Issue #1120 白屏的核心回归保护：只要完整页面脚本再次阻塞在
-    ``tm.start``，用户在生成期间刷新时仍可能收到指向旧渲染树的 delta。
+     Issue # This is the core regression protection for Issue #1120 white screen: whenever the full page script blocks again on
+    ``tm.start``,  delta. 
     """
     tree = ast.parse(WEBUI_MAIN.read_text(encoding="utf-8"))
     function = next(
@@ -59,10 +59,10 @@ def test_generation_controls_submit_background_task_instead_of_blocking_page():
 
 def test_webui_runtime_config_updates_do_not_use_blocking_writes():
     """
-    生成期间的普通控件 rerun 不能重新等待长任务持有的配置锁。
+     rerun . 
 
-    所有 WebUI 配置写入都必须经过非阻塞 helper；LLM 连接测试和语音试听可
-    使用 try lock 快速返回，但页面代码不能直接调用阻塞锁或阻塞保存函数。
+     WebUI  helper; LLM 
+     try lock , . 
     """
     tree = ast.parse(WEBUI_MAIN.read_text(encoding="utf-8"))
     calls = {
@@ -143,7 +143,7 @@ def test_webui_runtime_config_updates_do_not_use_blocking_writes():
 def test_completed_task_renders_subject_named_video_download(
     tmp_path, ui_config, expected_open_count
 ):
-    """完成任务应提供成片下载，并按 WebUI 配置决定是否自动打开目录。"""
+    """,  WebUI . """
     tree = ast.parse(WEBUI_MAIN.read_text(encoding="utf-8"))
     selected_nodes = []
     target_names = {
@@ -244,7 +244,7 @@ def test_completed_task_renders_subject_named_video_download(
 
 
 def test_submit_generation_returns_while_pipeline_is_still_running():
-    """后台流水线未结束时，提交函数必须已经返回，让 Streamlit 完成本次渲染。"""
+    """, ,  Streamlit . """
     task_id = "background-submit-test"
     started = threading.Event()
     release = threading.Event()
@@ -256,7 +256,7 @@ def test_submit_generation_returns_while_pipeline_is_still_running():
         finished.set()
         return {"videos": ["/tmp/final-1.mp4"]}
 
-    params = VideoParams(video_subject="异步生成测试")
+    params = VideoParams(video_subject="")
     try:
         with (
             patch.object(webui_task.tm, "start", side_effect=blocking_start),
@@ -282,8 +282,8 @@ def test_submit_generation_returns_while_pipeline_is_still_running():
 
 
 def test_submit_generation_copies_params_before_starting_worker():
-    """页面后续 rerun 或流水线内部修改参数时，不能反向污染当前表单对象。"""
-    params = VideoParams(video_subject="参数隔离测试")
+    """ rerun , . """
+    params = VideoParams(video_subject="")
     with patch.object(webui_task._task_manager, "add_task") as add_task:
         webui_task.submit_generation("copied-params-test", params, capture_logs=False)
 
@@ -294,9 +294,9 @@ def test_submit_generation_copies_params_before_starting_worker():
 
 
 def test_scheduling_failure_is_saved_as_terminal_task_state():
-    """队列或线程启动失败时不能让任务管理器永久停留在“生成中”。"""
+    """"". """
     task_id = "scheduling-failure-test"
-    params = VideoParams(video_subject="调度失败测试")
+    params = VideoParams(video_subject="")
     with patch.object(
         webui_task._task_manager,
         "add_task",
@@ -313,7 +313,7 @@ def test_scheduling_failure_is_saved_as_terminal_task_state():
 
 
 def test_worker_logs_are_available_without_streamlit_session_state():
-    """后台日志写入线程安全缓存，页面只需轮询快照即可恢复实时日志。"""
+    """, . """
     task_id = "captured-log-test"
     with webui_task._task_logs_lock:
         webui_task._task_logs.pop(task_id, None)
@@ -332,7 +332,7 @@ def test_worker_logs_are_available_without_streamlit_session_state():
     ):
         result = webui_task._run_generation(
             task_id,
-            VideoParams(video_subject="日志测试"),
+            VideoParams(video_subject=""),
             capture_logs=True,
         )
 
@@ -348,7 +348,7 @@ def test_worker_logs_are_available_without_streamlit_session_state():
 
 
 def test_generation_log_fragment_refreshes_within_half_a_second():
-    """日志轮询间隔不能退回到明显落后于终端输出的秒级刷新。"""
+    """. """
     assert webui_task.TASK_LOG_REFRESH_INTERVAL_SECONDS <= 0.5
 
     tree = ast.parse(WEBUI_MAIN.read_text(encoding="utf-8"))
@@ -369,11 +369,11 @@ def test_generation_log_fragment_refreshes_within_half_a_second():
 
 def test_generation_submit_skips_duplicate_config_save():
     """
-    提交任务后不能在页面末尾再次等待配置锁。
+    . 
 
-    后台任务会在完整生成期间持有 runtime_config_lock。生成分支已经请求过
-    非阻塞保存，页面末尾无需重复请求；普通交互则继续通过同一个非阻塞 helper
-    保存，不能重新退回 config.save_config。
+     runtime_config_lock. 
+    , ;  helper
+    ,  config.save_config. 
     """
     tree = ast.parse(WEBUI_MAIN.read_text(encoding="utf-8"))
     controls = next(
@@ -420,7 +420,7 @@ def test_generation_submit_skips_duplicate_config_save():
 
 
 def test_terminal_logger_reload_preserves_task_log_handler():
-    """热重载只能替换终端 handler，不能清空后台任务的日志 sink。"""
+    """ handler,  sink. """
     previous_handler_id = logging_utils._terminal_handler_id
     try:
         with (
@@ -443,7 +443,7 @@ def test_terminal_logger_reload_preserves_task_log_handler():
 
 
 def test_worker_wrapper_failure_is_saved_instead_of_leaving_processing_state():
-    """日志或配置包装层异常也必须转换成可查询的失败终态。"""
+    """. """
     task_id = "worker-wrapper-failure-test"
     with (
         patch.object(webui_task.tm, "start", side_effect=RuntimeError("lock failed")),
@@ -455,7 +455,7 @@ def test_worker_wrapper_failure_is_saved_instead_of_leaving_processing_state():
     ):
         result = webui_task._run_generation(
             task_id,
-            VideoParams(video_subject="工作线程失败测试"),
+            VideoParams(video_subject=""),
             capture_logs=False,
         )
 

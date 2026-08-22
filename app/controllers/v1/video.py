@@ -36,7 +36,7 @@ from app.services import state as sm
 from app.services import task as tm
 from app.utils import file_security, utils
 
-# 认证依赖项
+# Authentication dependencies
 # router = new_router(dependencies=[Depends(base.verify_token)])
 router = new_router()
 
@@ -49,7 +49,7 @@ _max_concurrent_tasks = config.app.get("max_concurrent_tasks", 5)
 _max_queued_tasks = config.app.get("max_queued_tasks", 100)
 
 redis_url = f"redis://:{_redis_password}@{_redis_host}:{_redis_port}/{_redis_db}"
-# 根据配置选择合适的任务管理器
+# Choose the appropriate task manager based on your configuration
 if _enable_redis:
     task_manager = RedisTaskManager(
         max_concurrent_tasks=_max_concurrent_tasks,
@@ -64,8 +64,8 @@ else:
 
 
 def _sanitize_upload_filename(filename: str, request_id: str) -> str:
-    # 浏览器或客户端有时会附带目录信息，甚至可能夹带 ../ 这类穿越片段。
-    # 这里只保留纯文件名，避免上传接口把文件写到目标目录之外。
+    # Browsers or clients sometimes come with directory information and may even include traversal fragments such as ../.
+    # Only pure file names are retained here to prevent the upload interface from writing files outside the target directory.
     normalized_name = (filename or "").replace("\\", "/").split("/")[-1].strip()
     if not normalized_name or normalized_name in {".", ".."}:
         raise HttpException(
@@ -92,7 +92,7 @@ def _resolve_path_within_directory(base_dir: str, unsafe_path: str, request_id: 
 
 
 def _public_task_data(task: dict) -> dict:
-    """复制任务状态并移除仅用于服务端进程协调的内部字段。"""
+    """Copies the task state and removes internal fields used only for server-side process coordination."""
     public_task = dict(task)
     public_task.pop("cross_post_owner", None)
     return public_task
@@ -108,8 +108,8 @@ def _task_file_to_uri(file: str, endpoint: str, task_dir: str, request_id: str) 
     try:
         resolved_path = file_security.resolve_path_within_directory(task_dir, file)
     except ValueError as exc:
-        # 任务状态理论上只应保存任务目录内的产物路径。这里不再继续拼接 URL，
-        # 避免把异常路径包装成可访问链接；同时保留原值，便于排查历史脏数据。
+        # Theoretically, the task status should only save the product path in the task directory. We will not continue to splice URLs here.
+        # Avoid packaging abnormal paths into accessible links; at the same time, retain the original value to facilitate troubleshooting of historical dirty data.
         logger.warning(
             f"skip unsafe task output path, request_id: {request_id}, path: {file}, "
             f"error: {str(exc)}"
@@ -126,7 +126,7 @@ def _task_file_to_uri(file: str, endpoint: str, task_dir: str, request_id: str) 
 def _parse_byte_range(
     range_header: str | None, file_size: int, request_id: str
 ) -> tuple[int, int]:
-    """解析单段 HTTP Range，并把无效或越界请求稳定转换成 416。"""
+    """Parse a single segment HTTP Range, and stably convert invalid or out-of-bounds requests into 416. """
     if file_size <= 0:
         raise HttpException(
             task_id=request_id,
@@ -138,8 +138,8 @@ def _parse_byte_range(
         return 0, file_size - 1
 
     try:
-        # 视频播放器这里只需要单段 bytes range。拒绝多段请求可以避免返回体
-        # 与 Content-Range 不一致，也避免异常字符串落入 int() 产生 500。
+        # The video player only needs a single bytes range. Rejecting multipart requests avoids returning the body
+        # Inconsistent with Content-Range, it also avoids exception strings falling into int() to produce 500.
         if not range_header.startswith("bytes=") or "," in range_header:
             raise ValueError("unsupported range format")
         start_text, end_text = range_header[6:].split("-", 1)
@@ -212,9 +212,9 @@ def create_task(
                 tm.start, task_id=task_id, params=body, stop_at=stop_at
             )
         except Exception:
-            # 状态记录在调度前创建，默认标记为 processing。如果调度器没能
-            # 接管任务（例如线程启动失败或 Redis 队列不可用），必须回滚该
-            # 记录，否则 API 和 WebUI 会永久展示一个实际从未运行的任务。
+            # Status records are created before scheduling and are labeled processing by default. If the scheduler fails
+            # To take over a task (such as thread startup failure or Redis queue unavailability), the task must be rolled back
+            # Logging, otherwise the API and WebUI will forever show a task that never actually runs.
             sm.state.delete_task(task_id)
             raise
         logger.success(f"Task created: {utils.to_json(task)}")
@@ -327,8 +327,8 @@ def get_bgm_list(request: Request):
             {
                 "name": filename,
                 "size": os.path.getsize(file),
-                # 只返回文件名，避免把服务器绝对路径暴露给调用方。服务端会
-                # 在 storage/bgm 和 resource/songs 两个白名单目录中重新解析。
+                # Only the file name is returned to avoid exposing the absolute path of the server to the caller. The server will
+                # Re-parse in the two whitelist directories storage/bgm and resource/songs.
                 "file": filename,
             }
         )
@@ -354,8 +354,8 @@ def upload_bgm_file(request: Request, file: UploadFile = File(...)):
     try:
         safe_filename = bgm_service.save_bgm_upload(file.filename, file.file)
     except bgm_service.BgmUploadError as exc:
-        # 上传失败通常可以由用户更换文件后恢复，因此记录 request_id 和明确原因，
-        # 但不输出文件内容或绝对路径，避免日志泄露用户数据。
+        # Upload failures can usually be recovered by the user replacing the file, so log the request_id and clear reason,
+        # However, the file content or absolute path is not output to prevent the log from leaking user data.
         logger.warning(
             f"background music upload rejected: request_id={request_id}, error={str(exc)}"
         )
@@ -365,8 +365,8 @@ def upload_bgm_file(request: Request, file: UploadFile = File(...)):
             message=f"{request_id}: {str(exc)}",
         )
     except bgm_service.BgmServiceError as exc:
-        # 工具链或存储故障属于服务端问题，不能伪装成用户文件错误。日志保留
-        # request_id 和内部原因，HTTP 响应只返回稳定文案，避免暴露服务器路径。
+        # Toolchain or storage failures are server-side issues and cannot be disguised as user file errors. Log retention
+        # request_id and internal reasons, the HTTP response only returns stable copy to avoid exposing the server path.
         logger.error(
             f"background music upload failed: request_id={request_id}, error={str(exc)}"
         )
@@ -391,8 +391,8 @@ def get_video_materials_list(request: Request):
     files = []
     for suffix in allowed_suffixes:
         files.extend(glob.glob(os.path.join(local_videos_dir, f"*.{suffix}")))
-    # 文件系统枚举顺序不稳定，直接返回会导致“顺序拼接”在不同机器或不同
-    # 时刻表现不一致。这里统一按文件名排序，至少保证服务端返回顺序可预测。
+    # The file system enumeration order is unstable, and returning directly will cause "sequential splicing" on different machines or different
+    # Inconsistent performance at all times. Here, the files are sorted uniformly by file name, at least to ensure that the order returned by the server is predictable.
     files.sort(key=lambda file_path: os.path.basename(file_path).lower())
     video_materials_list = []
     for file in files:
@@ -401,8 +401,8 @@ def get_video_materials_list(request: Request):
             {
                 "name": filename,
                 "size": os.path.getsize(file),
-                # 与 BGM 一样，只返回文件名；创建任务时再在 local_videos
-                # 白名单目录内解析，避免 API 泄露宿主机绝对路径。
+                # Like BGM, only the file name is returned; when creating the task, add it to local_videos
+                # Parse within the whitelist directory to prevent the API from leaking the absolute path of the host.
                 "file": filename,
             }
         )

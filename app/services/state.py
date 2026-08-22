@@ -36,7 +36,7 @@ class BaseState(ABC):
 
     @abstractmethod
     def patch_task(self, task_id: str, **kwargs) -> bool:
-        """只更新已有任务的指定字段；任务不存在时返回 False。"""
+        """Only update the specified fields of existing tasks; return when the task does not exist False. """
         pass
 
 
@@ -79,9 +79,9 @@ class MemoryState(BaseState):
             return copy.deepcopy(task) if task is not None else None
 
     def patch_task(self, task_id: str, **kwargs) -> bool:
-        # 异步发布只应补充发布状态，不能覆盖已经保存的视频、字幕等结果。
-        # 在同一把锁内完成存在性判断和字段合并，也可避免任务删除后
-        # 被后台线程重建。
+        # Asynchronous publishing should only supplement the publishing status and cannot overwrite already saved video, subtitles and other results.
+        # Completing the existence judgment and field merging in the same lock can also avoid the problem of deleting tasks.
+        # Rebuilt by background thread.
         with self._lock:
             task = self._tasks.get(task_id)
             if task is None:
@@ -118,9 +118,9 @@ class RedisState(BaseState):
         cursor = 0
         total = 0
         while True:
-            # Redis 数据库中除了任务 Hash，还可能存在 RedisTaskManager 使用的
-            # List 队列。只扫描 Hash 可以避免对队列执行 HGETALL 时触发
-            # WRONGTYPE，同时保证 total 只统计真正的任务记录。
+            # In addition to the task Hash in the Redis database, there may also be the Hash used by RedisTaskManager.
+            # List queue. Scan only Hash to avoid triggering when HGETALL is performed on the queue
+            # WRONGTYPE, while ensuring that total only counts real task records.
             cursor, keys = self._redis.scan(
                 cursor,
                 count=page_size,
@@ -130,9 +130,9 @@ class RedisState(BaseState):
             batch_size = len(keys)
             total += batch_size
 
-            # Redis SCAN 是分批返回 key。分页切片必须基于“当前批次起始索引”
-            # 计算，而不能用累积后的 total 反推，否则第一页会切到空数组，
-            # 第二页也可能只返回部分数据。
+            # Redis SCAN returns keys in batches. Paginated slicing must be based on the "current batch starting index"
+            # Calculation, but cannot use the accumulated total to back-calculate, otherwise the first page will be cut to an empty array.
+            # The second page may also return only partial data.
             if batch_start < end and total > start:
                 slice_start = max(0, start - batch_start)
                 slice_end = min(batch_size, end - batch_start)
@@ -144,8 +144,8 @@ class RedisState(BaseState):
                     }
                     tasks.append(task)
 
-            # 即使当前页已经取满，也要继续 SCAN 到 cursor=0，
-            # 因为调用方需要准确 total 来渲染分页信息。
+            # Even if the current page is full, continue SCAN to cursor=0,
+            # Because the caller needs an accurate total to render the paging information.
             if cursor == 0:
                 break
         return tasks, total
@@ -190,9 +190,9 @@ class RedisState(BaseState):
         for field, value in kwargs.items():
             arguments.extend((field, str(value)))
 
-        # EXISTS 和 HSET 如果分成两条命令，后台发布线程与删除请求并发时，
-        # HSET 可能在删除后重新创建一条残缺任务。Lua 脚本由 Redis 原子执行，
-        # 可以保证任务不存在时不写入，且不会改变现有字段之外的数据。
+        # If EXISTS and HSET are divided into two commands, when the background publishing thread and the deletion request are concurrent,
+        # HSET may recreate an incomplete task after deletion. Lua scripts are executed atomically by Redis,
+        # It can be guaranteed that no writing will occur when the task does not exist, and data outside the existing fields will not be changed.
         updated = self._redis.eval(
             _PATCH_EXISTING_TASK_SCRIPT,
             1,

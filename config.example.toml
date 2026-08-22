@@ -97,7 +97,7 @@ twelvelabs_rerank_terms = false
 # twelvelabs_pegasus_model = "pegasus1.5"
 
 # Match search terms and downloaded materials to the script narrative order.
-# 默认关闭，开启后会减少随机性，使素材顺序更贴近文案结构。
+# It is turned off by default. When turned on, it will reduce randomness and make the order of materials closer to the copy structure.
 match_materials_to_script = false
 
 # Optional Sonilo video-matched original background music.
@@ -303,7 +303,7 @@ max_concurrent_tasks = 5
 max_queued_tasks = 100
 
 # -----------------------------------------------------------------------------
-# Cross-platform Publishing / 跨平台发布
+# Cross-platform Publishing / cross-platform publishing
 # -----------------------------------------------------------------------------
 
 # Upload-Post can publish generated videos to TikTok, Instagram, and YouTube.
@@ -325,7 +325,7 @@ upload_post_youtube_privacy_status = "public"
 upload_post_max_pending_tasks = 10
 
 # =============================================================================
-# Whisper Subtitles / Whisper 字幕
+# Whisper Subtitles / Whisper subtitles
 # =============================================================================
 
 [whisper]
@@ -342,7 +342,7 @@ compute_type = "int8"
 # initial_prompt = ""
 
 # =============================================================================
-# Material Request Proxy / 素材请求代理
+# Material Request Proxy / Material Request Proxy
 # =============================================================================
 
 [proxy]
@@ -353,7 +353,7 @@ compute_type = "int8"
 # https = "http://127.0.0.1:1080"
 
 # =============================================================================
-# TTS Providers / 语音合成服务
+# TTS Providers / Speech Synthesis Service
 # =============================================================================
 
 [azure]
@@ -402,7 +402,7 @@ model_id = "chatterbox"
 voices = ["default-Female"]
 
 # =============================================================================
-# WebUI Preferences / WebUI 偏好
+# WebUI Preferences / WebUI Preferences
 # =============================================================================
 
 [ui]
@@ -410,7 +410,7 @@ voices = ["default-Female"]
 hide_log = false
 
 # Open the task folder automatically after video generation completes.
-# 视频生成完成后是否自动打开任务目录；关闭后仍可在任务管理中手动打开。
+# Whether to automatically open the task directory after the video generation is completed; after closing, it can still be opened manually in task management.
 open_task_folder_on_completion = true
 
 # The WebUI writes the remaining preferences automatically. Uncomment values

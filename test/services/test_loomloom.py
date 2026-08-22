@@ -125,11 +125,11 @@ class TestLoomLoomScriptBackend(unittest.TestCase):
 
     def test_prepares_one_independent_input_row_per_candidate(self):
         batch = self.backend.prepare_script_batch(
-            subject="人工智能改变生活",
+            subject="Artificial intelligence changes life",
             candidate_count=3,
             language="zh-CN",
             duration_seconds=45,
-            style="知识类",
+            style="Knowledge",
         )
 
         self.assertEqual(len(batch.input_rows), 3)
@@ -137,9 +137,9 @@ class TestLoomLoomScriptBackend(unittest.TestCase):
         self.assertEqual(batch.input_rows[2]["candidateIndex"], "3")
         self.assertEqual(
             batch.input_rows[0]["requirements"],
-            "输出语言：zh-CN\n目标时长（秒）：45\n风格或附加要求：知识类",
+            "Output language:zh-CN\nTarget duration (seconds):45\nStyle or additional requirements: Knowledge",
         )
-        self.assertEqual(batch.input_rows[0]["subject"], "人工智能改变生活")
+        self.assertEqual(batch.input_rows[0]["subject"], "Artificial intelligence changes life")
 
     def test_quote_uses_market_listing_public_contract(self):
         self.session.request.return_value = _Response(
@@ -153,7 +153,7 @@ class TestLoomLoomScriptBackend(unittest.TestCase):
                 "estimatedBuyerPayable": {"amount": "0.0012345", "currency": "CNY"},
             },
         )
-        batch = self.backend.prepare_script_batch(subject="主题", candidate_count=2)
+        batch = self.backend.prepare_script_batch(subject="theme", candidate_count=2)
 
         result = self.backend.quote(batch)
 
@@ -173,7 +173,7 @@ class TestLoomLoomScriptBackend(unittest.TestCase):
         self.assertEqual(len(request.kwargs["json"]["inputRows"]), 2)
 
     def test_execute_requires_explicit_confirmation_before_network(self):
-        batch = self.backend.prepare_script_batch(subject="主题", candidate_count=1)
+        batch = self.backend.prepare_script_batch(subject="theme", candidate_count=1)
 
         with self.assertRaisesRegex(ValueError, "confirm=True"):
             self.backend.execute(
@@ -195,7 +195,7 @@ class TestLoomLoomScriptBackend(unittest.TestCase):
                 "listingVersionId": "version-1",
             },
         )
-        batch = self.backend.prepare_script_batch(subject="主题", candidate_count=1)
+        batch = self.backend.prepare_script_batch(subject="theme", candidate_count=1)
 
         result = self.backend.execute(
             batch,
@@ -224,7 +224,7 @@ class TestLoomLoomScriptBackend(unittest.TestCase):
             ),
         ]
         self.backend._sleep = MagicMock()
-        batch = self.backend.prepare_script_batch(subject="主题", candidate_count=1)
+        batch = self.backend.prepare_script_batch(subject="theme", candidate_count=1)
 
         result = self.backend.execute(
             batch,
@@ -263,7 +263,7 @@ class TestLoomLoomScriptBackend(unittest.TestCase):
             session=session,
             credential_provider=lambda: "current-user-token",
         )
-        batch = backend.prepare_script_batch(subject="主题", candidate_count=1)
+        batch = backend.prepare_script_batch(subject="theme", candidate_count=1)
 
         backend.quote(batch)
 
@@ -328,8 +328,8 @@ class TestLoomLoomScriptBackend(unittest.TestCase):
             "portName": "result",
             "inlineText": json.dumps(
                 {
-                    "script": "第一条脚本",
-                    "videoTerms": ["人工智能", "日常生活"],
+                    "script": "First script",
+                    "videoTerms": ["AI", "daily life"],
                 },
                 ensure_ascii=False,
             ),
@@ -366,8 +366,8 @@ class TestLoomLoomScriptBackend(unittest.TestCase):
         result = self.backend.get_script_results("run-1")
 
         self.assertEqual(len(result.candidates), 1)
-        self.assertEqual(result.candidates[0].script, "第一条脚本")
-        self.assertEqual(result.candidates[0].video_terms, ("人工智能", "日常生活"))
+        self.assertEqual(result.candidates[0].script, "First script")
+        self.assertEqual(result.candidates[0].video_terms, ("AI", "daily life"))
         self.assertEqual(result.errors[0].message, "model timeout")
         second_request = self.session.request.call_args_list[1]
         self.assertEqual(second_request.kwargs["params"]["pageToken"], "page-2")
@@ -385,7 +385,7 @@ class TestLoomLoomScriptBackend(unittest.TestCase):
                                 "portName": "result",
                                 "inlineText": (
                                     "```json\n"
-                                    '{"script":"第一条脚本","videoTerms":["AI"]}\n'
+                                    '{"script":"First script","videoTerms":["AI"]}\n'
                                     "```"
                                 ),
                             }
@@ -397,7 +397,7 @@ class TestLoomLoomScriptBackend(unittest.TestCase):
 
         result = self.backend.get_script_results("run-1")
 
-        self.assertEqual(result.candidates[0].script, "第一条脚本")
+        self.assertEqual(result.candidates[0].script, "First script")
         self.assertEqual(result.candidates[0].video_terms, ("AI",))
 
     def test_result_contract_requires_one_inline_json_result_artifact(self):
@@ -429,7 +429,7 @@ class TestLoomLoomScriptBackend(unittest.TestCase):
             402,
             {"error": "insufficient balance", "sensitive": "do-not-copy"},
         )
-        batch = self.backend.prepare_script_batch(subject="主题", candidate_count=1)
+        batch = self.backend.prepare_script_batch(subject="theme", candidate_count=1)
 
         with self.assertRaisesRegex(
             LoomLoomAPIError, "HTTP 402: insufficient balance"
@@ -451,9 +451,9 @@ class TestLoomLoomVideoBackend(unittest.TestCase):
         self.backend = LoomLoomVideoBackend(self.settings, session=self.session)
 
     def test_prepares_one_video_row_per_scene(self):
-        """默认 SkillBot 必须按场景逐行报价，并携带固定的视频安全要求。"""
+        """default SkillBot Quotations must be made on a scene-by-scene basis and carry fixed video security requirements."""
         batch = self.backend.prepare_video_batch(
-            subject="AI 办公效率",
+            subject="AI Office efficiency",
             scene_prompts=["office worker", "AI assistant"],
             aspect_ratio="9:16",
         )
@@ -465,7 +465,7 @@ class TestLoomLoomVideoBackend(unittest.TestCase):
         self.assertIn("No text", batch.input_rows[0]["scenePrompt"])
 
     def test_downloads_video_artifact_without_forwarding_api_key(self):
-        """签名产物地址无需 Bearer Key，避免把账户凭证泄漏给对象存储。"""
+        """Signature product address is not required Bearer Key, to avoid leaking account credentials to object storage."""
         self.session.request.return_value = _Response(
             200,
             {
@@ -499,7 +499,7 @@ class TestLoomLoomVideoBackend(unittest.TestCase):
         self.assertTrue(response.closed)
 
     def test_closes_download_response_when_artifact_is_too_large(self):
-        """大小预检拒绝下载时也必须立即释放流式 HTTP 连接。"""
+        """The stream must also be released immediately when the size preflight rejects the download HTTP connect."""
         self.session.request.return_value = _Response(
             200,
             {
