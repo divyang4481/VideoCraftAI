@@ -30,7 +30,7 @@ hide_config = false
 # independently generated script candidates. The WebUI integration is optional.
 script_generation_backend = "local"
 
-# LoomLoom Public API settings. The WebUI supports the public MoneyPrinterTurbo
+# LoomLoom Public API settings. The WebUI supports the public VideoCraft AI
 # SkillBot below out of the box. Configure the key in the WebUI or a private
 # config.toml, and never commit a real key. The fixed SkillBot accepts subject,
 # requirements, and candidateIndex for each row
@@ -122,7 +122,7 @@ openai_model_name = "llama3.1"  # Or whatever model you downloaded in Ollama
 #llm_provider = "moonshot"
 
 # Kimi / Moonshot AI
-# API key: https://platform.kimi.com?track_id=track-2f5441d6ffd84c509dd079d78e9db5dc&aff=moneyprinterturbo
+# API key: https://platform.kimi.com?track_id=track-2f5441d6ffd84c509dd079d78e9db5dc&aff=videocraftai
 moonshot_api_key = ""
 moonshot_base_url = ""
 moonshot_model_name = ""

@@ -2,12 +2,12 @@
 FROM python:3.11-slim-bullseye
 
 # Set the working directory in the container
-WORKDIR /MoneyPrinterTurbo
+WORKDIR /VideoCraft AI
 
-# Set the /MoneyPrinterTurbo directory permissions to 777
-RUN chmod 777 /MoneyPrinterTurbo
+# Set the /VideoCraft AI directory permissions to 777
+RUN chmod 777 /VideoCraft AI
 
-ENV PYTHONPATH="/MoneyPrinterTurbo"
+ENV PYTHONPATH="/VideoCraft AI"
 
 # Local users will continue to use domestic images by default; GitHub Actions will use default when publishing GHCR images.
 # This prevents overseas runners from being too slow to access domestic images, causing image publishing to be stuck for a long time.
@@ -102,10 +102,10 @@ EXPOSE 8501
 CMD ["streamlit", "run", "./webui/Main.py", "--server.address=0.0.0.0", "--server.port=8501", "--browser.serverAddress=127.0.0.1", "--server.enableCORS=True", "--browser.gatherUsageStats=False", "--client.toolbarMode=minimal", "--logger.hideWelcomeMessage=True", "--server.showEmailPrompt=False"]
 
 # 1. Build the Docker image using the following command
-# docker build -t moneyprinterturbo .
+# docker build -t videocraftai .
 
 # 2. Run the Docker container using the following command
 ## For Linux or MacOS:
-# docker run -v $(pwd)/config.toml:/MoneyPrinterTurbo/config.toml -v $(pwd)/storage:/MoneyPrinterTurbo/storage -p 127.0.0.1:8501:8501 moneyprinterturbo
+# docker run -v $(pwd)/config.toml:/VideoCraft AI/config.toml -v $(pwd)/storage:/VideoCraft AI/storage -p 127.0.0.1:8501:8501 videocraftai
 ## For Windows:
-# docker run -v ${PWD}/config.toml:/MoneyPrinterTurbo/config.toml -v ${PWD}/storage:/MoneyPrinterTurbo/storage -p 127.0.0.1:8501:8501 moneyprinterturbo
+# docker run -v ${PWD}/config.toml:/VideoCraft AI/config.toml -v ${PWD}/storage:/VideoCraft AI/storage -p 127.0.0.1:8501:8501 videocraftai

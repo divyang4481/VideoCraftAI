@@ -1,11 +1,11 @@
 {
   "meta": {
-    "name": "MoneyPrinterTurbo Batch copywriting candidates",
-    "description": "Batch generation based on video themes can be used directly MoneyPrinterTurbo Copywriting and material search terms.",
+    "name": "VideoCraft AI Batch copywriting candidates",
+    "description": "Batch generation based on video themes can be used directly VideoCraft AI Copywriting and material search terms.",
     "scenario": "short-video-script",
     "inputSummary": "Video Topics, Generation Requirements, and Candidate Numbers",
     "primaryOutputType": "text",
-    "tags": ["MoneyPrinterTurbo", "short video", "Batch copywriting"]
+    "tags": ["VideoCraft AI", "short video", "Batch copywriting"]
   },
   "steps": [
     {

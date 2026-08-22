@@ -1497,7 +1497,7 @@ wheels = [
 ]
 
 [[package]]
-name = "moneyprinterturbo"
+name = "videocraft-ai"
 version = "1.3.4"
 source = { virtual = "." }
 dependencies = [

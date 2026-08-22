@@ -21,7 +21,7 @@ from loguru import logger
 from streamlit_tour import Tour
 
 # When WebUI is run as an independent portal, the project root directory needs to take precedence over third-party dependencies.
-# Prevent the app package with the same name in the dependency from obscuring MoneyPrinterTurbo's own app package.
+# Prevent the app package with the same name in the dependency from obscuring VideoCraft AI's own app package.
 root_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 if root_dir in sys.path:
     sys.path.remove(root_dir)
@@ -73,7 +73,7 @@ st.set_page_config(
 
 
 # Streamlit 1.59 will display platform entrances such as Deploy and skills nudge by default in the upper right corner of the page.
-# MoneyPrinterTurbo is a native tool for end users, these entries will leave a large blank space at the top,
+# VideoCraft AI is a native tool for end users, these entries will leave a large blank space at the top,
 # It can also confuse new users into thinking they need to install additional components. The Streamlit platform toolbar is uniformly hidden here.
 # And compress the top space of the main container to leave only the project's own title, language selection and business settings area.
 style_file = Path(__file__).with_name("styles.css")
@@ -140,12 +140,12 @@ _RUNTIME_CONFIG_SECTIONS = {
 }
 # Setup presets and key backups use separate file identifiers. When importing, first verify the schema and version.
 # Avoid mistaking task records, config.toml, or other JSON for cost function export files.
-SETTINGS_PRESET_SCHEMA = "moneyprinterturbo.settings-preset"
+SETTINGS_PRESET_SCHEMA = "videocraftai.settings-preset"
 SETTINGS_PRESET_VERSION = 1
-SETTINGS_PRESET_FILE_NAME = "moneyprinterturbo-settings.json"
-KEY_BACKUP_SCHEMA = "moneyprinterturbo.key-backup"
+SETTINGS_PRESET_FILE_NAME = "videocraftai-settings.json"
+KEY_BACKUP_SCHEMA = "videocraftai.key-backup"
 KEY_BACKUP_VERSION = 1
-KEY_BACKUP_FILE_NAME = "moneyprinterturbo-keys.json"
+KEY_BACKUP_FILE_NAME = "videocraftai-keys.json"
 # Presets only describe build parameters. Materials, dubbing and soundtracks are all local file paths, and presets usually need to be on another computer.
 # Importing into the machine or another container, bringing these paths will only point to files that do not exist.
 PRESET_EXCLUDED_PARAM_KEYS = frozenset(
@@ -1367,27 +1367,20 @@ def _render_brand(available_update: str | None = None):
             f"{update_label}</a>"
         )
     
-    st.markdown(
-        f"""
-        <div class="vc-brand-group">
-            <div class="vc-logo-icon">⚡</div>
-            <div class="vc-brand-titles">
-                <h1 class="mpt-brand" style="margin:0; padding:0; display:flex; align-items:center; gap:0.6rem;">
-                    <span class="mpt-brand__name">{brand_title}</span>
-                    <a class="mpt-brand__version"
-                       href="{repo_url}"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       aria-label="Open project repository"
-                       title="Open project repository">v{html.escape(str(config.project_version))}</a>
-                    {update_link}
-                </h1>
-                <div class="vc-brand-subtitle">✨ Next-Gen Automated AI Video Production Studio</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    brand_html = (
+        '<div class="vc-brand-group">'
+        '<div class="vc-logo-icon">⚡</div>'
+        '<div class="vc-brand-titles">'
+        '<h1 class="mpt-brand" style="margin:0; padding:0; display:flex; align-items:center; gap:0.6rem;">'
+        f'<span class="mpt-brand__name">{brand_title}</span>'
+        f'<a class="mpt-brand__version" href="{repo_url}" target="_blank" rel="noopener noreferrer" aria-label="Open project repository" title="Open project repository">v{html.escape(str(config.project_version))}</a>'
+        f'{update_link}'
+        '</h1>'
+        '<div class="vc-brand-subtitle">✨ Next-Gen Automated AI Video Production Studio</div>'
+        '</div>'
+        '</div>'
     )
+    st.markdown(brand_html, unsafe_allow_html=True)
 
 
 @st.fragment(run_every="1s")
@@ -3107,7 +3100,7 @@ def _loomloom_script_signature(
 
 
 def _render_local_script_generation(params):
-    """ MoneyPrinterTurbo  LLM . """
+    """ VideoCraft AI  LLM . """
     if not st.button(
         tr("Generate Video Script and Keywords"),
         key="auto_generate_script",

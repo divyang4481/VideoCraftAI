@@ -1,6 +1,6 @@
-# MoneyPrinterTurbo Test Directory
+# VideoCraft AI Test Directory
 
-This directory contains unit tests for the **MoneyPrinterTurbo** project.
+This directory contains unit tests for the **VideoCraft AI** project.
 
 ## Directory Structure
 

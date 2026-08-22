@@ -458,7 +458,7 @@ def _load_toml_config(config_path: str):
 
 
 def load_config():
-    # fix: IsADirectoryError: [Errno 21] Is a directory: '/MoneyPrinterTurbo/config.toml'
+    # fix: IsADirectoryError: [Errno 21] Is a directory: '/VideoCraft AI/config.toml'
     if os.path.isdir(config_file):
         shutil.rmtree(config_file)
 

@@ -5,10 +5,10 @@ FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Set the working directory in the container
-WORKDIR /MoneyPrinterTurbo
-RUN chmod 777 /MoneyPrinterTurbo
+WORKDIR /VideoCraft AI
+RUN chmod 777 /VideoCraft AI
 
-ENV PYTHONPATH="/MoneyPrinterTurbo"
+ENV PYTHONPATH="/VideoCraft AI"
 
 # Failure of any preceding step in the installation chain must terminate the build. Only delete the blinker that comes with the system
 # It is an ignorable operation, so limit the fault tolerance to the parentheses of the subcommand and avoid the

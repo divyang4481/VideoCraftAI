@@ -1,4 +1,4 @@
-"""examine MoneyPrinterTurbo Is there a new official version available?"""
+"""examine VideoCraft AI Is there a new official version available?"""
 
 import threading
 import time
@@ -98,7 +98,7 @@ def get_available_update(current_version: str) -> str | None:
 
     normalized_latest_version = str(latest_version)
     logger.info(
-        "MoneyPrinterTurbo update available: "
+        "VideoCraft AI update available: "
         f"current={installed_version}, latest={normalized_latest_version}"
     )
     return normalized_latest_version
@@ -187,7 +187,7 @@ class AsyncUpdateChecker:
             # get_available_update handles expected network and data exceptions. This is the background thread
             # Finally, to protect the boundary, the complete stack must be recorded to avoid permanent pending after unexpected exception and silent termination.
             logger.exception(
-                "unexpected error while checking for a MoneyPrinterTurbo update"
+                "unexpected error while checking for a VideoCraft AI update"
             )
             available_version = None
 

@@ -1,12 +1,12 @@
 {
   "meta": {
-    "name": "MoneyPrinterTurbo AI Video material",
-    "description": "for MoneyPrinterTurbo Batch generate short video clips without subtitles or dubbing.",
+    "name": "VideoCraft AI AI Video material",
+    "description": "for VideoCraft AI Batch generate short video clips without subtitles or dubbing.",
     "scenario": "short-video-material-generation",
     "inputSummary": "Scene description, aspect ratio and scene number",
     "primaryOutputType": "video",
     "tags": [
-      "MoneyPrinterTurbo",
+      "VideoCraft AI",
       "short video",
       "AI Video material"
     ]
@@ -47,7 +47,7 @@
       {
         "key": "aspectRatio",
         "label": "aspect ratio",
-        "description": "MoneyPrinterTurbo The aspect ratio used in the final film",
+        "description": "VideoCraft AI The aspect ratio used in the final film",
         "valueType": "enum",
         "enumValues": [
           "9:16",

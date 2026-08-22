@@ -1,4 +1,4 @@
-"""LoomLoom Market clients for MoneyPrinterTurbo batch generation.
+"""LoomLoom Market clients for VideoCraft AI batch generation.
 
 This module deliberately lives outside ``llm_provider``. LoomLoom executes a
 versioned Market SkillBot with quote, confirmation, run lifecycle, and result
@@ -23,7 +23,7 @@ DEFAULT_RESULT_PORT_NAME = "output"
 DEFAULT_BASE_URL = "https://loomloom.shengsuanyun.com/loom/v1"
 DEFAULT_SCRIPT_MARKET_LISTING_ID = "019fd618-9baa-73d9-94f4-c9270b6f3025"
 # Copywriting and video are two inputs and completely different product structures that have been put on the shelves of SkillBot. Both IDs are
-# An internal constant of the MoneyPrinterTurbo integration, the user only needs to provide the API Key and should not touch the Listing ID.
+# An internal constant of the VideoCraft AI integration, the user only needs to provide the API Key and should not touch the Listing ID.
 DEFAULT_VIDEO_MARKET_LISTING_ID = "019fd60d-5c26-78f7-bba0-5584f9ee7337"
 DEFAULT_REQUEST_TIMEOUT_SECONDS = 30.0
 DEFAULT_POLL_INTERVAL_SECONDS = 2.0
@@ -97,7 +97,7 @@ class LoomLoomSettings:
             .strip()
             .rstrip("/"),
             api_token=resolve_api_token(values),
-            # MoneyPrinterTurbo Fixed calling the default SkillBot that the project has already listed. Listing ID
+            # VideoCraft AI Fixed calling the default SkillBot that the project has already listed. Listing ID
             # It is an integration implementation detail and ordinary users cannot be required to repeatedly configure it in config.toml.
             market_listing_id=DEFAULT_SCRIPT_MARKET_LISTING_ID,
             listing_version_id="",
